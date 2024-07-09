@@ -11,7 +11,7 @@ def drop_arm(PWM):
     PWM.change_angle(25)
 
 def proccess_received(Ser,rec):
-    if(rec == b'begin'):
+    if(rec == b'begin\r\n'):
         turn_page()
         send_serial('end')
     else:
@@ -67,12 +67,14 @@ def turn_page():
     print('begin turn page')
     P1 = pwm('1') #arm
     P0 = pwm('0') 
+    P1.enable()
+    P0.enable()
     yaw = 15
     pitch = 25
     P0.change_angle(15)
     P1.change_angle(25)
     time.sleep(3)
-    slow(P0,15,20)
+    slow(P0,15,18)
     slow(P1,25,15)
     slow(P1,15,7)
     time.sleep(0.7)
@@ -82,6 +84,7 @@ def turn_page():
     slow(P0,15,5)
     time.sleep(0.5)
     slow(P0,10,15)
+    time.sleep(3)
     print('finish turn page')
 
 
@@ -109,11 +112,11 @@ class pwm:
         num = (500 - num)*100000
         os.system('echo ' + str(int(num)) + ' > /sys/class/pwm/pwmchip' + self.index + '/pwm0/duty_cycle')
 
-    def enable():
-        os.system('echo 1 > /sys/class/pwm/pwmchip' + index + '/pwm0/enable')
+    def enable(self):
+        os.system('echo 1 > /sys/class/pwm/pwmchip' + self.index + '/pwm0/enable')
 
-    def disable():
-        os.system('echo 0 > /sys/class/pwm/pwmchip' + index + '/pwm0/enable')
+    def disable(self):
+        os.system('echo 0 > /sys/class/pwm/pwmchip' + self.index + '/pwm0/enable')
 
     
 
